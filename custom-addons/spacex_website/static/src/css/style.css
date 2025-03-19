@@ -1,0 +1,31 @@
+.custom-kanban-card {
+    background-color: pink;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.spacex-mission-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: green;
+}
+
+.spacex-mission-description {
+    font-size: 16px;
+    color: magenta;
+    line-height: 1.5;
+}
+
+/* Custom button styling */
+.spacex-button {
+    background-color: blue;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.spacex-button:hover {
+    background-color: blanchedalmond;
+}
