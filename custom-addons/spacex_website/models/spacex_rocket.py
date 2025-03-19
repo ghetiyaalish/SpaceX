@@ -7,3 +7,4 @@ class SpaceXRocket(models.Model):
     name = fields.Char(string='Rocket Name', required=True)
     model = fields.Char(string='Rocket Model')
     missions_ids = fields.One2many('spacex.mission', 'rocket_id', string='Missions')
+    
