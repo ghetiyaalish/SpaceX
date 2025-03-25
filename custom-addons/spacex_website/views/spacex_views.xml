@@ -42,6 +42,7 @@
     </record>
 
     
+
     <!-- Kanban View for SpaceX Missions -->
     <record id="view_spacex_mission_kanban" model="ir.ui.view">
         <field name="name">spacex.mission.kanban</field>
@@ -55,7 +56,7 @@
                 <field name="Mission_leader"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click custom-kanban-card" t-attf-class="oe_kanban_color_{{ success and 'success' or 'danger' }}">
+                        <div class="oe_kanban_global_click" >
                             <div class="o_kanban_record_title">
                                 <strong><field name="name"/></strong>
                             </div>
@@ -107,6 +108,31 @@
         </field>
     </record>
 
+<!-- search view -->
+    <record id="view_spacex_mission_search" model="ir.ui.view">
+        <field name="name">spacex.mission.search</field>
+        <field name="model">spacex.mission</field>
+        <field name="arch" type="xml">
+            <search string="Tests">
+                <field name="name"/>
+                <field name="launch_date"/>
+                <field name="success"/>
+                <field name="rocket_id"/>
+                <field name="Mission_leader"/>
+
+                <filter string="Successful Missions" domain="[('success', '=', True)]"/>
+                <filter string="Failed Missions" domain="[('success', '=', False)]"/>
+                <filter string="Upcoming Missions" domain="[('launch_date', '>=', context_today())]"/>
+                <filter string="Past Missions" domain="[('launch_date', '<', context_today())]"/>
+            <!-- Group By Options -->
+            <group string="Group By">
+                <filter string="Rocket" context="{'group_by': 'rocket_id'}"/>
+                <filter string="Mission Leader" context="{'group_by': 'Mission_leader'}"/>
+            </group>
+            </search>
+        </field>
+    </record>
+
     
     
     <!-- Action for SpaceX Missions -->
@@ -122,8 +148,6 @@
     <menuitem id="menu_spacex_missions" name="Missions" parent="menu_spacex_root" action="action_spacex_mission" sequence="50" />
     <menuitem id="menu_spacex_kanban" name="Kanban" parent="menu_spacex_root" action="action_spacex_mission" sequence="60" />
 </odoo>
-
-
 
 
 <!-- Dashboard View for SpaceX Missions -->
