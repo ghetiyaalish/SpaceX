@@ -1,30 +1,32 @@
 {
     'name': 'SpaceX Website',
-    'version': '1.0',
+    'version': '17.0',
     'summary': 'Manage SpaceX missions and rockets',
     'description': 'A module to manage SpaceX missions and rockets.',
     'author': 'Your Name',
     'website': 'https://yourwebsite.com',
     'category': 'Website',
-    'sequence':1,
-    'depends': ['website','web'],
+    'sequence': 1,
+    'depends': ['web',"website"],
     'data': [
-        'security/ir.model.access.csv',
-        'views/spacex_views.xml',
+        
         'views/templates.xml',
-        # 'views/assets.xml', 
+        # 'security/ir.model.access.csv',
+        
+
     ],
-    'controllers': [
-        'controllers/main.py',  # Add the new controller
-    ],
+
     'assets': {
-    'web.assets_backend': [
-        'custom-addons/spacex_website/static/src/css/style.css',
-    ],
-},
-    
-    
+        'web.assets_frontend': [
+             'spacex_website/static/src/js_templates.xml',
+             
+             
+
+        ],
+        
+    },
     'installable': True,
     'application': True,
+    'sequence':-1,
     'license': 'LGPL-3',
 }
