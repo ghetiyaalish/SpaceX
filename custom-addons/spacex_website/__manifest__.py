@@ -11,14 +11,14 @@
     'data': [
         'security/ir.model.access.csv',
          'views/actions.xml',
-        'views/menus.xml',
+        # 'views/menus.xml',
         'views/templates.xml',
     ],
 
     'assets': {
         'web.assets_backend': [
              'spacex_website/static/src/js/awesome_dashboard.js',
-             'spacex_website/static/src/xml/awesome_dashboard.xml',
+            #  'spacex_website/static/src/xml/awesome_dashboard.xml',
              'spacex_website/static/src/css/dashboard.scss',
              
         ],

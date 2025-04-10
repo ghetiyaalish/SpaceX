@@ -8,7 +8,7 @@ import { rpc } from "@web/core/network/rpc";
 class AwesomeDashboard extends Component {
     static template = "spacex_website.AwesomeDashboard";
     static components = { Layout };
-    
+
     setup() {
         this.state = useState({
             controlPanel: {
@@ -38,4 +38,5 @@ class AwesomeDashboard extends Component {
     }
 }
 
+// Register the action in the registry
 registry.category("actions").add("awesome_dashboard", AwesomeDashboard);

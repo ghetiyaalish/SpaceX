@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="assets_backend" inherit_id="web.assets_backend">
-        <xpath expr="." position="inside">
-            <link rel="stylesheet" href="/spacex_website/static/src/scss/dashboard.scss"/>
-            <script type="text/javascript" src="/spacex_website/static/src/js/awesome_dashboard.js"></script>
-        </xpath>
+    <template id="AwesomeDashboard" name="Awesome Dashboard">
+        <Layout className="'o_dashboard h-100'" display="{ controlPanel: state.controlPanel }">
+            <div class="p-3">
+                <h2>Awesome Dashboard</h2>
+                <t t-if="state.loading">
+                    Loading...
+                </t>
+                <ul t-if="!state.loading">
+                    <li t-foreach="state.dashboardData" t-as="item">
+                        <strong><t t-esc="item.name"/></strong>: <t t-esc="item.value"/>
+                    </li>
+                </ul>
+            </div>
+        </Layout>
     </template>
 </odoo>
