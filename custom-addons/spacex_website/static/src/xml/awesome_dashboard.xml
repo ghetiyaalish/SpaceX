@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="spacex_website.AwesomeDashboard" owl="1">
+        <Layout
+            className="'o_dashboard h-100'"
+            controlPanel="state.controlPanel"
+        >
+            <div class="container-fluid p-3">
+                <h2>Awesome Dashboard</h2>
+                
+                <t t-if="state.loading">
+                    <div class="text-center mt-3">
+                        <i class="fa fa-refresh fa-spin"/> Loading...
+                    </div>
+                </t>
+                
+                <t t-else="">
+                    <div class="row mt-3">
+                        <t t-foreach="state.dashboardData" t-as="item">
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 t-esc="item.name"/>
+                                        <p class="display-4" t-esc="item.value"/>
+                                        <p t-esc="item.description"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </Layout>
+    </t>
+</templates>

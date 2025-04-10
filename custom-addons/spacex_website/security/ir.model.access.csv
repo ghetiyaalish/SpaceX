@@ -1,5 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_spacex_mission_user,Access for Mission Users,model_spacex_mission,base.group_user,1,1,1,0
-access_spacex_mission_manager,Access for Mission Managers,model_spacex_mission,base.group_system,1,1,1,1
-access_spacex_rocket_user,Access for Rocket Users,model_spacex_rocket,base.group_user,1,1,1,0
-access_spacex_rocket_manager,Access for Rocket Managers,model_spacex_rocket,base.group_system,1,1,1,1
+access_spacex_dashboard,spacex.dashboard,model_spacex_dashboard,base.group_user,1,1,1,1

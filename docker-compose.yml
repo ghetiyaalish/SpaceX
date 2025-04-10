@@ -1,83 +1,26 @@
-# # version: '3.1'
-# services:
-#   db:
-#     image: postgres:13
-#     environment:
-#       - POSTGRES_DB=postgres
-#       - POSTGRES_USER=odoo
-#       - POSTGRES_PASSWORD=odoo
-#     volumes:
-#       - odoo-db-data:/var/lib/postgresql/data
-
-#   odoo:
-#     image: odoo:17.0
-#     depends_on:
-#       - db
-#     ports:
-#       - "8069:8069"
-#     environment:
-#       - HOST=db
-#       - USER=odoo
-#       - PASSWORD=odoo
-#       - POSTGRES_DB=spacex-db1
-#     volumes:
-#       - odoo-web-data:/var/lib/odoo
-#       - ./custom-addons:/mnt/extra-addons
-#     command: odoo --dev=reload
-
-# volumes:
-#   odoo-db-data:
-#   odoo-web-data:
-
-
-# version: '3.8'
 services:
-  db:
+  postgres:
     image: postgres:13
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=odoo
-      - POSTGRES_PASSWORD=odoo
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: odoo
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U odoo"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   odoo:
     image: odoo:17.0
     depends_on:
-      db:
-        condition: service_healthy
+      - postgres
     ports:
       - "8069:8069"
-    environment:
-      - HOST=db
-      - USER=odoo
-      - PASSWORD=odoo
-      - POSTGRESQL_DB=spacex-db1
-      - DEV_MODE=True
-      - UNACCENT=True
     volumes:
+      - ./odoo.conf:/etc/odoo/odoo.conf
       - odoo-web-data:/var/lib/odoo
       - ./custom-addons:/mnt/extra-addons
-      - ./config:/etc/odoo
-    command: >
-      bash -c "
-      while ! psql -h db -U odoo -d postgres -c 'SELECT 1' >/dev/null 2>&1; do
-        echo 'Waiting for PostgreSQL...';
-        sleep 2;
-      done;
-      odoo --dev=reload --workers=0
-      "
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+    environment:
+      ODOO_DATABASE: odoo
 
 volumes:
-  odoo-db-data:
   odoo-web-data:
+  odoo-db-data:
