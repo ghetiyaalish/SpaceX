@@ -7,7 +7,7 @@
     "website"       :  "softatt.com",
     "license"       :  "OPL-1",
     "category"      :  "sales",
-    "depends"       :  ["base", "crm", "sales_team"],
+    "depends"       :  ["base", "crm", "sales_team","account"],
     "currency"      :  "USD",
     "data"          :  [
         "security/groups.xml",
@@ -24,5 +24,6 @@
             ],
     },
     "images": ['static/description/banner.gif'],
-
+    'installable': True,
+    'application': False
 }

@@ -121,13 +121,10 @@
                                         <t t-out="state.dashboardValues.change.days_to_win_change"/>%
                                     </span>
                                 </td>
-
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Repeat similar structure for Performance table -->
 
                 <div class="w-100 mt-3 mt-lg-0">
                     <table class="o_dashboard_banner_table table table-sm table-borderless h-100 px-1 mb-0 text-center" style="table-layout: fixed; width: 100%;">
@@ -194,7 +191,6 @@
                             </tr>
                             <!-- Third Row for Change Indicator -->
                             <tr class="h-100" t-if="state.dashboardValues.change">
-
                                 <td class="o_text py-1 px-1 text-start align-middle">
                                 </td>
                                 
@@ -249,17 +245,115 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-            
-            <div class="text-center mt-1">
-                <button  t-on-click="toggleFiltersWizard" class="btn btn-secondary m-1" style="border-radius:40px;" t-if="!state.isCollapsed">
-                    <i class="fa fa-filter" title="Apply Filters"></i>
-                </button>
 
-                <button t-on-click="toggleCollapse" class="btn btn-secondary m-1" style="border-radius:40px;">
-                    <i t-if="state.isCollapsed" class="fa fa-arrow-down"></i>
-                    <i t-if="!state.isCollapsed" class="fa fa-arrow-up"></i>
-                </button>
+                <!-- Centered Activities Section -->
+                <div class="container-fluid mt-3" t-if="state.dashboardValues and (state.dashboardValues.valsA.activities.length or state.dashboardValues.valsA.activity_suggestions.length)">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-lg-10 col-xl-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs card-header-tabs justify-content-center">
+                                        <li class="nav-item">
+                                            <a t-attf-class="nav-link #{state.activeTab === 'timeline' ? 'active' : ''}" 
+                                               t-on-click="() => this.setActiveTab('timeline')">
+                                                Activity Timeline
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a t-attf-class="nav-link #{state.activeTab === 'suggestions' ? 'active' : ''}" 
+                                               t-on-click="() => this.setActiveTab('suggestions')">
+                                                Suggested Activities
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Activity Timeline Tab -->
+                                <div class="card-body" t-if="state.activeTab === 'timeline'">
+                                    <div class="activity-timeline">
+                                        <t t-foreach="state.dashboardValues.valsA.activities" t-as="activity" t-key="activity.id">
+                                            <div class="activity-item mb-3 p-3 bg-light rounded">
+                                                <div class="d-flex justify-content-between">
+                                                    <strong>
+                                                        <a t-att-href="'/web#id=' + activity.res_id + '&amp;model=crm.lead&amp;view_type=form'" 
+                                                           class="text-primary">
+                                                            <t t-esc="activity.opportunity_name"/>
+                                                        </a>
+                                                    </strong>
+                                                    <small class="text-muted" t-esc="activity.date_deadline"/>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <span class="badge bg-info" t-esc="activity.activity_type"/>
+                                                    <span class="ms-2" t-esc="activity.summary"/>
+                                                </div>
+                                                <div class="text-muted small mt-1" t-esc="activity.user_id"/>
+                                            </div>
+                                        </t>
+                                        <t t-if="!state.dashboardValues.valsA.activities.length">
+                                            <div class="text-center text-muted py-3">No recent activities found</div>
+                                        </t>
+                                    </div>
+                                </div>
+                                
+                                <!-- Suggested Activities Tab -->
+                                <div class="card-body" t-if="state.activeTab === 'suggestions'">
+                                    <div>
+                                        <div class="mb-3 text-center">
+                                            <label class="form-label">Select Opportunity:</label>
+                                            <select class="form-select w-auto mx-auto" 
+                                                    t-on-change="(ev) => this.selectOpportunity(parseInt(ev.target.value))">
+                                                <option value="">-- Select --</option>
+                                                <t t-foreach="state.dashboardValues.valsA.activities" t-as="activity" t-key="activity.res_id">
+                                                    <option t-att-value="activity.res_id" t-esc="activity.opportunity_name"/>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        
+                                        <t t-foreach="state.dashboardValues.valsA.activity_suggestions" t-as="stage" t-key="stage.stage_id">
+                                            <div class="mb-4">
+                                                <h5 class="text-center" t-esc="stage.stage_name"/>
+                                                <div class="list-group">
+                                                    <t t-foreach="stage.activities" t-as="activity" t-key="activity.name">
+                                                        <div class="list-group-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <strong t-esc="activity.name"/>
+                                                                    <div class="small text-muted" t-esc="activity.example_summary"/>
+                                                                </div>
+                                                                <button class="btn btn-sm btn-primary" 
+                                                                        t-on-click="() => this.createSuggestedActivity(activity.name, activity.example_summary)">
+                                                                    Add
+                                                                </button>
+                                                            </div>
+                                                            <div class="small text-muted mt-1">
+                                                                Used <t t-esc="activity.count"/> times in this stage
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </t>
+                                        
+                                        <t t-if="!state.dashboardValues.valsA.activity_suggestions.length">
+                                            <div class="text-center text-muted py-3">No activity suggestions available</div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-1">
+                    <button t-on-click="toggleFiltersWizard" class="btn btn-secondary m-1" style="border-radius:40px;" t-if="!state.isCollapsed">
+                        <i class="fa fa-filter" title="Apply Filters"></i>
+                    </button>
+
+                    <button t-on-click="toggleCollapse" class="btn btn-secondary m-1" style="border-radius:40px;">
+                        <i t-if="state.isCollapsed" class="fa fa-arrow-down"></i>
+                        <i t-if="!state.isCollapsed" class="fa fa-arrow-up"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </t>

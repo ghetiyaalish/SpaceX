@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template inherit_id="account.report_invoice_document" id="report_invoice_document_styled">
+        <xpath expr="//div[@name='address_not_same_as_shipping']" position="replace">
+            <div class="col-6" name="address_not_same_as_shipping">
+                <t t-set="address">
+                    <address class="mb-0">
+                        <t t-set="company_name" t-value="o.partner_id.parent_id.name"/>
+                        <t t-set="legal_form_name" t-value="o.partner_id.parent_id.company_legal_form_id.name"/>
+                        <t t-set="street" t-value="o.partner_id.street"/>
+                        <t t-set="zip_code" t-value="o.partner_id.zip"/>
+                        <t t-set="city" t-value="o.partner_id.city"/>
+                        <t t-set="temp_country_code" t-value="o.partner_id.country_id.id"/>
+                        <t t-set="temp_language" t-value="o.partner_id.lang"/>
+                        <t t-set="country_name" t-value="env['res.country'].browse(temp_country_code).with_context(lang=temp_language).name"/>
+                        
+                        <span t-esc="company_name"/><br/>
+                        <span t-esc="street"/><br/>
+                        <span t-esc="zip_code"/> <span t-esc="city"/><br/>
+                        <span t-esc="country_name"/>
+                    </address>
+                    
+                    <div t-if="o.partner_id.parent_id.vat" id="partner_vat_address_same_as_shipping">
+                        <t t-if="o.company_id.account_fiscal_country_id.vat_label">
+                            <span t-esc="o.company_id.account_fiscal_country_id.vat_label"/>
+                        </t>
+                        <t t-else="">
+                            <span>Tax ID: </span>
+                        </t>
+                        <span t-esc="o.partner_id.parent_id.vat"/>
+                    </div>
+                </t>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@class='mt-5']" position="attributes">
+            <attribute name="style">font-size: 12px;</attribute>
+        </xpath>
+
+        <xpath expr="//th[@name='th_taxes']" position="replace"/>
+        <xpath expr="//td[span/@id='line_tax_ids']" position="replace"/>
+    </template>
+</odoo>

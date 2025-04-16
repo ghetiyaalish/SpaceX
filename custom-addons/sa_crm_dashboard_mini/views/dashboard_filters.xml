@@ -55,7 +55,7 @@
                 </footer>
             </form>
         </field>
-    </record>
+    </record>   
     <record id="action_open_sa_crm_filters_wizard" model="ir.actions.act_window">
         <field name="name">Dashboard Filters</field>
         <field name="res_model">sa.crm.filters.wizard</field>

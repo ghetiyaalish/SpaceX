@@ -1,0 +1,49 @@
+/* Custom invoice styling */
+.o_report_layout {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.table {
+    th {
+        font-weight: bold;
+        background-color: #f8f9fa;
+    }
+    
+    td {
+        vertical-align: middle;
+    }
+}
+
+.total {
+    font-size: 16px;
+    
+    strong {
+        font-weight: bold;
+    }
+}
+
+/* Company and customer info styling */
+.company-info, .customer-info {
+    margin-bottom: 20px;
+    
+    h2 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+}
+
+/* Payment terms styling */
+.payment-terms {
+    margin-top: 30px;
+    font-style: italic;
+    color: #666;
+}

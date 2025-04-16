@@ -23,7 +23,6 @@ class SaCrmFiltersWizard(models.TransientModel):
     compare_salesteam   = fields.Many2one('crm.team', string="Sales Team")
     compare_domain      = fields.Text(default='[]', required=True)
 
-
     def action_filter(self):
         self.env['sa.crm.filters.wizard'].search([('create_uid', '=', self.env.context.get('uid')), 
                                                   ('id', '!=',self.id)], order="id DESC").unlink()
@@ -31,10 +30,77 @@ class SaCrmFiltersWizard(models.TransientModel):
         action['target'] = 'main'
         return action
 
-
 class CrmLead(models.Model):
     _inherit = "crm.lead"
-
+    
+    # @api.model
+    # def create_invoice_from_opportunity(self,opportunity_id):
+    #     opportunity = self.browse(opportunity_id)
+    #     if not opportunity or opportunity.type != 'opportunity' or opportunity.probability != 100:
+    #         raise UserError(_("You can only create invoices from won opportunities."))
+    #     if not self.env.user.has_group('account.group_account_invoice'):
+    #         raise AccessError(_("You don't have permissions to create invoices."))
+    
+    #     #prepare invoice values
+    #     invoice_vals = {
+    #         'move_type': 'out_invoice',
+    #         'partner_id': opportunity.partner_id.id,
+    #         'invoice_line_ids':[(0,0,{
+    #             'name': opportunity.name,
+    #             'quantity': 1,
+    #             'price_unit': opportunity.expected_revenue,
+    #             'account_id': opportunity.company_id.account_default_income_account_id.id,
+    #         })],
+    #         'team_id': opportunity.team_id.id,
+    #         'campaign_id': opportunity.campaign_id.id,
+    #         'source_id': opportunity.source_id.id,
+    #     }
+        
+    #     # Create the invoice
+    #     invoice = self.env['account.move'].with_context(default_move_type='out_invoice').create(invoice_vals)
+    #     return {
+    #     'invoice_id': invoice.id,
+    #     'invoice_name': invoice.name,
+    # }
+         
+    def _get_activity_suggestions(self, domain):
+        """Get suggested activities based on stage and history"""
+        suggestions = []
+        stages = self.env['crm.stage'].search([])
+        
+        for stage in stages:
+            # First find opportunities in this stage
+            stage_opportunities = self.env['crm.lead'].search([
+                ('stage_id', '=', stage.id)
+            ])
+            
+            if stage_opportunities:
+                # Then find activities linked to these opportunities
+                stage_activities = self.env['mail.activity'].search([
+                    ('res_id', 'in', stage_opportunities.ids),
+                    ('res_model', '=', 'crm.lead')
+                ], limit=5)
+                
+                if stage_activities:
+                    # Group by activity type
+                    activity_types = {}
+                    for act in stage_activities:
+                        if act.activity_type_id.id not in activity_types:
+                            activity_types[act.activity_type_id.id] = {
+                                'name': act.activity_type_id.name,
+                                'count': 0,
+                                'example_summary': act.summary or ''
+                            }
+                        activity_types[act.activity_type_id.id]['count'] += 1
+                    
+                    # Add suggestions for this stage
+                    suggestions.append({
+                        'stage_id': stage.id,
+                        'stage_name': stage.name,
+                        'activities': list(activity_types.values())
+                    })
+    
+        return suggestions   
     @api.model
     def get_sa_dashboard_values(self):
         """
@@ -151,7 +217,31 @@ class CrmLead(models.Model):
             avg_deal_size       = avg[0]['expected_revenue'] if avg else 0
             avg_days_to_win     = safe_divide(sum_days_to_win, won_count)
             closing_rate        = safe_divide(won_count, won_count + lost_count) * 100 if (won_count + lost_count) else 0
+            opportunities = self.env['crm.lead'].search(domain, limit=10)
+            activities = self.env['mail.activity'].search([
+            ('res_id', 'in', opportunities.ids),
+            ('res_model', '=', 'crm.lead')
+            ], order='date_deadline desc', limit=20)
             
+            activity_data = []
+            for activity in activities:
+                activity_data.append({
+                    'id': activity.id,
+                    'res_id': activity.res_id,
+                    'activity_type': activity.activity_type_id.name,
+                    'summary': activity.summary or '',
+                    'date_deadline': activity.date_deadline.strftime('%Y-%m-%d') if activity.date_deadline else '',
+                    'user_id': activity.user_id.name,
+                    'note': activity.note or '',
+                    'opportunity_name':  activity.res_id if activity.res_id else '',
+                })
+            
+            
+        
+
+            
+            
+            # won_opportunities   = self.env['crm.lead'].search_read(won_domain,['id', 'name', 'expected_revenue', 'partner_id'] , limit=10)
             return {
                 'label'             : label,
                 'won_count'         : won_count,
@@ -160,10 +250,14 @@ class CrmLead(models.Model):
                 'avg_deal_size'     : avg_deal_size,
                 'avg_days_to_win'   : avg_days_to_win,
                 'close_rate'        : closing_rate,
+                # 'won_opportunities': won_opportunities,
+                'activities': activity_data,  # Add activity data
+                'activity_suggestions': self._get_activity_suggestions(domain),
             }
-
+        
         metrics_1 = compute_metrics(context_1, "A")
         _logger.error(context_1)
+
         _logger.error(context_2)
         result = {
             'valsA': {
@@ -174,6 +268,12 @@ class CrmLead(models.Model):
                 'avg_deal_size'     : format_currency(metrics_1['avg_deal_size']),
                 'avg_days_to_win'   : f"{metrics_1['avg_days_to_win']:.2f}",
                 'close_rate'        : format_percentage(metrics_1['close_rate']),
+                # 'map_data': metrics_1['map_data'],
+                # 'funnel_data': metrics_1['funnel_data'],
+                # 'won_opportunities' : metrics_1.get('won_opportunities', []),
+                'activities': metrics_1['activities'],
+                'activity_suggestions': metrics_1['activity_suggestions'],
+                
             },
             'valsB'     : False,
             'change'    : False,
@@ -197,6 +297,12 @@ class CrmLead(models.Model):
                 'avg_deal_size': format_currency(metrics_2['avg_deal_size']),
                 'avg_days_to_win': f"{metrics_2['avg_days_to_win']:.2f}",
                 'close_rate': format_percentage(metrics_2['close_rate']),
+                # 'map_data': metrics_2['map_data'],
+                # 'funnel_data': metrics_2['funnel_data'],
+                # 'won_opportunities': metrics_2.get('won_opportunities', [])
+                'activities': metrics_2['activities'],
+                'activity_suggestions': metrics_2['activity_suggestions'],
+
             }
             result['change'] = percentage_changes
         if filters:
