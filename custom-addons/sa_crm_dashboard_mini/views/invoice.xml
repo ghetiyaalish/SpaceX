@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+<template id="report_invoice_document_custom" inherit_id="account.report_invoice_document">
+<xpath expr="//table[@name='invoice_line_table']" position="replace">
+            <!-- Header Section -->
+            <div class="header" style="border-bottom: 1px solid #eee; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <h1 style="color: #2c3e50;">INVOICE</h1>
+                        <h2 style="color: #3498db; margin-top: 0;">Customer Satisfaction is Our Priority</h2>
+                    </div>
+                    <div style="text-align: right;">
+                        <img t-att-src="'/logo.png?company=%s' % company.id" 
+                             style="max-height: 100px; max-width: 200px;"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company and Customer Info -->
+            <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                <div style="width: 45%;">
+                    <h3>From:</h3>
+                    <p>
+                        <strong t-field="company.name"/><br/>
+                        <t t-if="company.street"><t t-field="company.street"/><br/></t>
+                        <t t-if="company.street2"><t t-field="company.street2"/><br/></t>
+                        <t t-if="company.city or company.zip">
+                            <t t-field="company.city"/> <t t-field="company.zip"/><br/>
+                        </t>
+                        <t t-if="company.state_id"><t t-field="company.state_id.name"/>, </t>
+                        <t t-if="company.country_id"><t t-field="company.country_id.name"/><br/></t>
+                        <t t-if="company.phone">Phone: <t t-field="company.phone"/><br/></t>
+                        <t t-if="company.email">Email: <t t-field="company.email"/><br/></t>
+                        <t t-if="company.vat">VAT: <t t-field="company.vat"/><br/></t>
+                    </p>
+                </div>
+                
+                <div style="width: 45%;">
+                    <h3>Bill To:</h3>
+                    <p>
+                        <strong t-field="partner.name"/><br/>
+                        <t t-if="partner.street"><t t-field="partner.street"/><br/></t>
+                        <t t-if="partner.street2"><t t-field="partner.street2"/><br/></t>
+                        <t t-if="partner.city or partner.zip">
+                            <t t-field="partner.city"/> <t t-field="partner.zip"/><br/>
+                        </t>
+                        <t t-if="partner.state_id"><t t-field="partner.state_id.name"/>, </t>
+                        <t t-if="partner.country_id"><t t-field="partner.country_id.name"/><br/></t>
+                        <t t-if="partner.phone">Phone: <t t-field="partner.phone"/><br/></t>
+                        <t t-if="partner.email">Email: <t t-field="partner.email"/><br/></t>
+                        <t t-if="partner.vat">VAT: <t t-field="partner.vat"/><br/></t>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Invoice Details -->
+            <div style="margin-bottom: 20px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 33%; padding: 5px;"><strong>Invoice Number:</strong></td>
+                        <td style="width: 33%; padding: 5px;"><strong>Invoice Date:</strong></td>
+                        <td style="width: 33%; padding: 5px;"><strong>Due Date:</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px;"><t t-field="invoice.name"/></td>
+                        <td style="padding: 5px;"><t t-field="invoice.invoice_date"/></td>
+                        <td style="padding: 5px;"><t t-field="invoice.invoice_date_due"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px;"><strong>Reference:</strong></td>
+                        <td style="padding: 5px;"><strong>Payment Terms:</strong></td>
+                        <td style="padding: 5px;"><strong>Salesperson:</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px;"><t t-field="invoice.ref"/></td>
+                        <td style="padding: 5px;"><t t-field="invoice.invoice_payment_term_id.name"/></td>
+                        <td style="padding: 5px;"><t t-field="invoice.user_id.name"/></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Product Table -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #3498db; color: white;">
+                        <th style="padding: 10px; text-align: left;">Description</th>
+                        <th style="padding: 10px; text-align: center;">HSN/SAC</th>
+                        <th style="padding: 10px; text-align: center;">Quantity</th>
+                        <th style="padding: 10px; text-align: right;">Unit Price</th>
+                        <th style="padding: 10px; text-align: right;">Taxes</th>
+                        <th style="padding: 10px; text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="invoice.invoice_line_ids" t-as="line">
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 8px;">
+                                <t t-field="line.name"/>
+                                <t t-if="line.product_id.description_sale">
+                                    <br/><small style="color: #666;"><t t-field="line.product_id.description_sale"/></small>
+                                </t>
+                            </td>
+                            <td style="padding: 8px; text-align: center;">
+                                <t t-field="line.product_id.l10n_in_hsn_code"/>
+                            </td>
+                            <td style="padding: 8px; text-align: center;">
+                                <t t-field="line.quantity"/>
+                            </td>
+                            <td style="padding: 8px; text-align: right;">
+                                <t t-field="line.price_unit"/>
+                            </td>
+                            <td style="padding: 8px; text-align: right;">
+                                <t t-foreach="line.tax_ids" t-as="tax">
+                                    <span><t t-field="tax.name"/></span>
+                                    <t t-if="not tax_foreach.last">, </t>
+                                </t>
+                            </td>
+                            <td style="padding: 8px; text-align: right;">
+                                <t t-field="line.price_subtotal"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+
+            <!-- Totals -->
+            <div style="display: flex; justify-content: flex-end;">
+                <table style="width: 300px; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px; text-align: right;"><strong>Subtotal:</strong></td>
+                        <td style="padding: 8px; text-align: right;"><t t-field="invoice.amount_untaxed"/></td>
+                    </tr>
+                    <t t-foreach="invoice.tax_line_ids" t-as="tax">
+                        <tr>
+                            <td style="padding: 8px; text-align: right;">
+                                <t t-field="tax.name"/>:
+                            </td>
+                            <td style="padding: 8px; text-align: right;">
+                                <t t-field="tax.amount_total"/>
+                            </td>
+                        </tr>
+                    </t>
+                    <tr style="border-top: 1px solid #333;">
+                        <td style="padding: 8px; text-align: right;"><strong>Total:</strong></td>
+                        <td style="padding: 8px; text-align: right;"><t t-field="invoice.amount_total"/></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Amount in Words -->
+            <div style="margin-top: 20px; padding: 10px; background-color: #f8f9fa;">
+                <strong>Amount in words:</strong>
+                <t t-esc="amount_to_text(invoice.amount_total, invoice.currency_id)"/>
+            </div>
+
+            <!-- Payment Information -->
+            <div style="margin-top: 30px;">
+                <h3>Payment Information</h3>
+                <p>
+                    <strong>Bank Name:</strong> <t t-field="company.bank_ids.bank_id.name"/><br/>
+                    <strong>Account Number:</strong> <t t-field="company.bank_ids.acc_number"/><br/>
+                    <strong>IFSC Code:</strong> <t t-field="company.bank_ids.bank_bic"/><br/>
+                    <strong>Payment Due:</strong> <t t-field="invoice.invoice_date_due"/>
+                </p>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div style="margin-top: 30px; page-break-inside: avoid;">
+                <h3>Terms and Conditions</h3>
+                <p t-field="company.invoice_terms"/>
+            </div>
+
+            <!-- HSN Summary (for India) -->
+            <div t-if="invoice.company_id.country_id.code == 'IN'" style="margin-top: 30px;">
+                <h3>HSN Summary</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f8f9fa;">
+                            <th style="padding: 8px; text-align: left;">HSN/SAC</th>
+                            <th style="padding: 8px; text-align: center;">Quantity</th>
+                            <th style="padding: 8px; text-align: center;">Rate %</th>
+                            <th style="padding: 8px; text-align: right;">Taxable Value</th>
+                            <th style="padding: 8px; text-align: right;">Tax Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="invoice.invoice_line_ids" t-as="line">
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 8px;"><t t-field="line.product_id.l10n_in_hsn_code"/></td>
+                                <td style="padding: 8px; text-align: center;"><t t-field="line.quantity"/></td>
+                                <td style="padding: 8px; text-align: center;">
+                                    <t t-foreach="line.tax_ids" t-as="tax">
+                                        <span><t t-field="tax.amount"/></span>
+                                        <t t-if="not tax_foreach.last">, </t>
+                                    </t>
+                                </td>
+                                <td style="padding: 8px; text-align: right;"><t t-field="line.price_subtotal"/></td>
+                                <td style="padding: 8px; text-align: right;"><t t-field="line.price_tax"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top: 50px; text-align: center; font-size: 0.8em; color: #666;">
+                <p>Thank you for your business!</p>
+                <p>
+                    <t t-field="company.name"/> | 
+                    <t t-if="company.phone">Phone: <t t-field="company.phone"/> | </t>
+                    <t t-if="company.email">Email: <t t-field="company.email"/> | </t>
+                    <t t-if="company.website">Website: <t t-field="company.website"/></t>
+                </p>
+            </div>
+        </div>
+    </xpath>
+</template>
+</odoo>

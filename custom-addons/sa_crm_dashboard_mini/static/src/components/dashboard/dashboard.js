@@ -2,7 +2,7 @@
 
 import { session } from '@web/session';
 import { useService } from "@web/core/utils/hooks";
-import { Component, useState, onWillStart ,onMounted} from "@odoo/owl";
+import { Component, useState, onWillStart} from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 // import { loadJS } from "@web/core/assets";
 
@@ -46,7 +46,7 @@ export class SaCrmDashboard extends Component {
         }
     }
     async _fetchData() {
-        console.log(this.state.dashboardValues,'dashboardvalues if')
+        // console.log(this.state.dashboardValues,'dashboardvalues if')
         this.state.dashboardValues = await this.orm.call(
             'crm.lead',
             'get_sa_dashboard_values',
@@ -66,30 +66,51 @@ export class SaCrmDashboard extends Component {
         }
         
         try {
-            // Debug what we're sending
-            console.log("Creating activity for opportunity:", this.state.selectedOpportunity);
-            console.log("Activity data:", activity);
-    
-            // Use the proper endpoint and field names
-            await this.orm.create(
-                'mail.activity',
-                {
-                    'res_id': this.state.selectedOpportunity,
-                    'res_model': 'crm.lead',
-                    'activity_type_id': activity.id,
-                    'summary': activity.example_summary || activity.name,
-                    'date_deadline': new Date().toISOString().split('T')[0],
-                    // 'user_id': this.env.session.uid
-                }
+            // First get the res_model_id for 'crm.lead'
+            const modelData = await this.orm.searchRead(
+                'ir.model',
+                [['model', '=', 'crm.lead']],
+                ['id']
             );
+            
+            if (!modelData.length) {
+                throw new Error("Could not find crm.lead model");
+            }
+    
+            const res_model_id = modelData[0].id;
+    
+            // Prepare activity data with all required fields
+            const activityData = {
+                res_id: this.state.selectedOpportunity,
+                res_model: 'crm.lead',
+                res_model_id: res_model_id, // This is the critical missing field
+                activity_type_id: activity.id,
+                summary: activity.example_summary || activity.name,
+                note: activity.example_summary || '',
+                date_deadline: new Date().toISOString().split('T')[0]
+                // user_id: this.env.session.uid
+            };
+            
+            console.log("Creating activity with:", activityData);
+    
+            // Create the activity
+            const result = await this.orm.call(
+                'mail.activity',
+                'create',
+                [activityData]
+            );
+            console.log("after result")
     
             this.notification.add(
                 _t("Activity created successfully"),
                 {type: "success"}
             );
-            await this._fetchData(); // Refresh data
+                
+            await this._fetchData();
+            return result;
+
         } catch (error) {
-            console.error("Full error details:", error);
+            console.error("Activity creation failed:", error);
             const errorMsg = error.data?.message || error.message || _t("Unknown error");
             this.notification.add(
                 _t("Error creating activity: ") + errorMsg,
