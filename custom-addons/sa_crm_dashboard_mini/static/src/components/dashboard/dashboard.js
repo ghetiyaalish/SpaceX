@@ -4,20 +4,18 @@ import { session } from '@web/session';
 import { useService } from "@web/core/utils/hooks";
 import { Component, useState, onWillStart ,onMounted} from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { loadJS } from "@web/core/assets";
+// import { loadJS } from "@web/core/assets";
 
 export class SaCrmDashboard extends Component {
     setup() {
         this.action = useService('action');
         this.orm = useService('orm');
         this.notification = useService('notification');
+        // this.createSuggestedActivity = this.createSuggestedActivity.bind(this);
         this.state = useState({
             dashboardValues: null,
             isCollapsed: false,
             isHidden: true,
-            // mapLoaded: false,
-            // chartLibLoaded: false,
-            // isCreatingInvoice: false,
             activeTab: 'timeline', // 'timeline' or 'suggestions'
             selectedOpportunity: null,
         });
@@ -28,31 +26,37 @@ export class SaCrmDashboard extends Component {
         this.state.activeTab = tab;
     }
     
-    selectOpportunity(opportunityId) {
-        this.state.selectedOpportunity = opportunityId;
+    selectOpportunity(event) {
+        const value = event.target.value;
+       
+        this.state.selectedOpportunity = value
+
+        console.log("Selected Opportunity:",this.state.selectedOpportunity);
     }
     async onWillStart() {
         await this._checkUserGroup();
         if (!this.state.isHidden) {
             await Promise.all([
-                loadJS("/web/static/lib/Chart/Chart.js"),
-                loadJS("https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization"),
+                // loadJS("/web/static/lib/Chart/Chart.js"),
+                // loadJS("https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization"),
                 this._fetchData()
             ]);
-            this.state.chartLibLoaded = true;
-            this.state.mapLoaded = true;
+            // this.state.chartLibLoaded = true;
+            // this.state.mapLoaded = true;
         }
     }
     async _fetchData() {
+        console.log(this.state.dashboardValues,'dashboardvalues if')
         this.state.dashboardValues = await this.orm.call(
             'crm.lead',
             'get_sa_dashboard_values',
             [],
             { context: session.user_context },
         );
+        console.log(this.state.dashboardValues,'dashboardvalues')
     }
 
-    async createSuggestedActivity(activityType, summary) {
+    async createSuggestedActivity(activity) {
         if (!this.state.selectedOpportunity) {
             this.notification.add(
                 _t("Please select an opportunity first"),
@@ -62,30 +66,37 @@ export class SaCrmDashboard extends Component {
         }
         
         try {
-            await this.orm.call(
+            // Debug what we're sending
+            console.log("Creating activity for opportunity:", this.state.selectedOpportunity);
+            console.log("Activity data:", activity);
+    
+            // Use the proper endpoint and field names
+            await this.orm.create(
                 'mail.activity',
-                'create',
-                [{
+                {
                     'res_id': this.state.selectedOpportunity,
                     'res_model': 'crm.lead',
-                    'activity_type_id': activityType,
-                    'summary': summary,
-                    'date_deadline': new Date().toISOString().split('T')[0], // Today
-                }]
+                    'activity_type_id': activity.id,
+                    'summary': activity.example_summary || activity.name,
+                    'date_deadline': new Date().toISOString().split('T')[0],
+                    // 'user_id': this.env.session.uid
+                }
             );
+    
             this.notification.add(
                 _t("Activity created successfully"),
                 {type: "success"}
             );
             await this._fetchData(); // Refresh data
         } catch (error) {
+            console.error("Full error details:", error);
+            const errorMsg = error.data?.message || error.message || _t("Unknown error");
             this.notification.add(
-                _t("Error creating activity: ") + error.message,
+                _t("Error creating activity: ") + errorMsg,
                 {type: "danger"}
             );
         }
     }
-
     //  async createInvoice(opportunityId){
     //     this.state.isCreatingInvoice = true ;
     //     try{

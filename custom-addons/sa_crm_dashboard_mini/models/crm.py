@@ -67,7 +67,6 @@ class CrmLead(models.Model):
         """Get suggested activities based on stage and history"""
         suggestions = []
         stages = self.env['crm.stage'].search([])
-        
         for stage in stages:
             # First find opportunities in this stage
             stage_opportunities = self.env['crm.lead'].search([

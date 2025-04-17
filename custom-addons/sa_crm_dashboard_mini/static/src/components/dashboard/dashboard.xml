@@ -301,7 +301,7 @@
                                         <div class="mb-3 text-center">
                                             <label class="form-label">Select Opportunity:</label>
                                             <select class="form-select w-auto mx-auto" 
-                                                    t-on-change="(ev) => this.selectOpportunity(parseInt(ev.target.value))">
+                                                    t-on-change="selectOpportunity">
                                                 <option value="">-- Select --</option>
                                                 <t t-foreach="state.dashboardValues.valsA.activities" t-as="activity" t-key="activity.res_id">
                                                     <option t-att-value="activity.res_id" t-esc="activity.opportunity_name"/>
@@ -321,7 +321,7 @@
                                                                     <div class="small text-muted" t-esc="activity.example_summary"/>
                                                                 </div>
                                                                 <button class="btn btn-sm btn-primary" 
-                                                                        t-on-click="() => this.createSuggestedActivity(activity.name, activity.example_summary)">
+                                                                        t-on-click="() => this.createSuggestedActivity(activity)">
                                                                     Add
                                                                 </button>
                                                             </div>
