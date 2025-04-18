@@ -13,6 +13,7 @@
         "security/groups.xml",
         "security/ir.model.access.csv",
         "views/dashboard_filters.xml",
+        "views/"
         
         ],
     "assets": {

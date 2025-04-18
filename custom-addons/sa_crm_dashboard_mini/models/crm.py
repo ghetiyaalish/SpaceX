@@ -171,7 +171,7 @@ class CrmLead(models.Model):
                     'salesperson': context.get('compare_salesperson', [False])[0] if context.get('compare_salesperson') else False,
                     'salesteam': context.get('compare_salesteam', [False])[0] if context.get('compare_salesteam') else False,
                 }
-                
+        
         # Method to compute metrics
         def compute_metrics(filter_context, Label):
             label               = Label
@@ -258,6 +258,7 @@ class CrmLead(models.Model):
         _logger.error(context_1)
 
         _logger.error(context_2)
+        
         result = {
             'valsA': {
                 'label'             : metrics_1['label'],

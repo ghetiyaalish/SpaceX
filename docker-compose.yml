@@ -1,10 +1,11 @@
+# version: '3'
 services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo
-      POSTGRES_DB: odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_DB=odoo
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
 
@@ -19,8 +20,23 @@ services:
       - odoo-web-data:/var/lib/odoo
       - ./custom-addons:/mnt/extra-addons
     environment:
-      ODOO_DATABASE: odoo
+      - METABASE_URL=http://metabase:3000
+      - METABASE_SALES_DASHBOARD_ID=1
+      - ODOO_DATABASE=odoo
 
+  metabase:
+    image: metabase/metabase
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+    environment:
+      - MB_DB_TYPE=postgres
+      - MB_DB_DBNAME=odoo
+      - MB_DB_PORT=5432
+      - MB_DB_USER=odoo
+      - MB_DB_PASS=odoo
+      - MB_DB_HOST=postgres  # Changed from 'db' to 'postgres' to match service name
 volumes:
   odoo-web-data:
   odoo-db-data:

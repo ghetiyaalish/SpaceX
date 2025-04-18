@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='utf-8'?>
+<templates>
+    <t t-name="sales_dashboard.Dashboard">
+        <div class="o_sales_dashboard">
+            <!-- Main Dashboard Layout -->
+            <div class="row">
+                <!-- KPI Cards -->
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Orders</h5>
+                            <h2 class="card-text" t-esc="widget.data.total_orders"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Sales</h5>
+                            <h2 class="card-text" t-esc="widget.format_currency(widget.data.total_sales)"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Avg Order Value</h5>
+                            <h2 class="card-text" t-esc="widget.format_currency(widget.data.avg_order_value)"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Top Customers</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="topCustomersChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Sales by Salesperson</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesBySalespersonChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Orders Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Recent Orders</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="widget.data.recent_orders" t-as="order">
+                                        <tr>
+                                            <td><a t-att-href="'/web#id=' + order.id + '&amp;model=sale.order&amp;view_type=form'" t-esc="order.name"/></td>
+                                            <td t-esc="order.date_order"/>
+                                            <td t-esc="order.partner_id[1]"/>
+                                            <td t-esc="widget.format_currency(order.amount_total)"/>
+                                            <td>
+                                                <span t-attf-class="badge #{order.state === 'done' ? 'bg-success' : 'bg-warning'}">
+                                                    <t t-esc="order.state"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metabase Embed Section -->
+            <div class="row mt-4" t-if="widget.metabase_enabled">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Advanced Sales Analytics (Metabase)</h5>
+                        </div>
+                        <div class="card-body">
+                            <iframe 
+                                t-att-src="widget.metabase_url" 
+                                frameborder="0" 
+                                width="100%" 
+                                height="600"
+                                allowtransparency>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
