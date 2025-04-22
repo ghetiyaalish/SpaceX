@@ -1,0 +1,31 @@
+.custom_dashboard {
+    padding: 16px;
+    font-family: Arial, sans-serif;
+
+    .dashboard-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 16px;
+        flex: 1 1 200px;
+        min-width: 200px;
+
+        h3 {
+            margin-top: 0;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+    }
+}

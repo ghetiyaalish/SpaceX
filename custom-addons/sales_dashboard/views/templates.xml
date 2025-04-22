@@ -1,7 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="assets_backend" inherit_id="web.assets_backend">
-        <xpath expr="." position="inside">
-            <script type="text/javascript" src="/sales_dashboard/static/src/js/dashboard.js"></script>
-        </xpath>
-    </template>
+    <data>
+        <!-- Define the OWL Dashboard Client Action -->
+        <record id="action_owl_sales_dashboard" model="ir.actions.client">
+            <field name="name">Sales Dashboard</field>
+            <field name="tag">sales_dashboard.Dashboard</field> <!-- Make sure this matches your JS registry tag -->
+        </record>
+
+        <!-- Define the Main Menu -->
+        <menuitem name="OWL Tutorial" id="menu_owl_tutorial" sequence="10"/>
+
+        <!-- Define the Submenu with Action -->
+        <menuitem 
+            name="Sales Dashboard" 
+            id="menu_owl_sales_dashboard" 
+            parent="menu_owl_tutorial"
+            action="action_owl_sales_dashboard"
+            sequence="10"
+        />
+    </data>
 </odoo>

@@ -1,34 +1,35 @@
-from odoo import models,fields,api
-class SalesDashboard(models.Model):
-    _name = "sales.dashboard"
-    _description = "Sales Dashboard"
-    
+from odoo import models, fields, api
+
+class CustomDashboard(models.Model):
+    _name = 'custom.dashboard'
+    _description = 'Sales Dashboard'
+
     @api.model
-    def get_sales_data(self):
-        # Get total sales orders
-        total_orders = self.env['sale.order'].search_count([])
+    def get_dashboard_data(self):
+        orders = self.env['sale.order'].search([])
         
-        # Get total sales amount
-        total_sales = sum(self.env['sale.order'].search([]).mapped('amount_total'))
+        if not orders:
+            return {
+                'total_orders': 0,
+                'total_amount': 0,
+                'avg_order_value': 0,
+                'top_customer': 'No data',
+            }
+
+        total_amount = sum(order.amount_total for order in orders)
         
-        # Get average order value
-        avg_order_value = total_sales / total_orders if total_orders else 0
+        # Find top customer
+        customer_totals = {}
+        for order in orders:
+            customer_id = order.partner_id.id
+            customer_totals[customer_id] = customer_totals.get(customer_id, 0) + order.amount_total
         
-        # Get top customers
-        top_customers = self.env['sale.order'].read_group([],['partner_id','amount_total:sum'],['used_id'],orderby = 'amount_total desc')
-        
-        # Get sales by salesperson
-        sales_by_salesperson = self.env['sale.order'].read_group([],['used_id' , 'amount_total:sum'],['user_id'],orderby='amount_total desc')
-        
-        # Get recent orders
-        recent_orders = self.env['sale.order'].search_read([],['name','date_order','partner_id','amount_total','state'],limit=10,order = 'date_order desc')
-        
-        return{
-            'total_orders': total_orders,
-            'total_sales': total_sales,
-            'avg_order_value': avg_order_value,
-            'top_customers': top_customers,
-            'sales_by_salesperson': sales_by_salesperson,
-            'recent_orders': recent_orders,
-            
+        top_customer_id = max(customer_totals, key=customer_totals.get)
+        top_customer = self.env['res.partner'].browse(top_customer_id).name
+
+        return {
+            'total_orders': len(orders),
+            'total_amount': total_amount,
+            'avg_order_value': total_amount / len(orders),
+            'top_customer': top_customer,
         }
