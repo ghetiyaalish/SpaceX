@@ -24,14 +24,67 @@
                             </div>
                         </div>
                         <div class='row'>
-                            <KpiCard />
+
+                            <KpiCard name="'Quotations'" value="10" percentage="6" />
+                            <KpiCard name="'Orders'" value="20" percentage="20" />
+                            <KpiCard name="'Revenues'" value="'30.50K'" percentage="-3" />
+                            <KpiCard name="'Average Order'" value="'2.5K'" percentage="-10" />
+
+                        </div>
+                        <div class="row">
+                                <div class="col-lg-6 m-0 p-0">
+                                    <div class="shadow-sm border m-2 p-4 bg-white">
+                                        <div class="d-flex align-item-center justify-content-between">
+                                            <h1 class="text-primary fw-bold">Top Products</h1>
+                                            <div class="px-3 py-1 bg-primary cursor-pointer">
+                                                <span class="fa fa-arrow-right text-white" />
+                                            </div>
+                                        </div>
+                                        <ChartRenderer type="'doughnut'" title="'Top Products Chart'" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 m-0 p-0">
+                                    <div class="shadow-sm border m-2 p-4 bg-white">
+                                        <div class="d-flex align-item-center justify-content-between">
+                                            <h1 class="text-primary fw-bold">Top Sales People</h1>
+                                            <div class="px-3 py-1 bg-primary cursor-pointer">
+                                                <span class="fa fa-arrow-right text-white" />
+                                            </div>
+                                        </div>
+                                        <ChartRenderer type="'pie'" title="'Top Sales Person Chart'" />
+                                    </div>
+                                </div>
                         </div>
                     </div>
-                    <div class="col-lg-5"></div>
-
+                    <div class="col-lg-5">
+                            <div class="row m-2">
+                                <div class="col-lg-12 m-0 p-0">
+                                    <div class="shadow-sm border p-4 bg-white">
+                                        <div class="d-flex align-item-center justify-content-between">
+                                            <h1 class="text-primary fw-bold">Monthly Sales</h1>
+                                            <div class="px-3 py-1 bg-primary cursor-pointer">
+                                                <span class="fa fa-arrow-right text-white" />
+                                            </div>
+                                        </div>
+                                        <ChartRenderer type="'bar'" title="'Monthly Sales Chart'" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 m-0 p-0">
+                                    <div class="shadow-sm border p-4 bg-white">
+                                        <div class="d-flex align-item-center justify-content-between">
+                                            <h1 class="text-primary fw-bold">Partner Orders</h1>
+                                            <div class="px-3 py-1 bg-primary cursor-pointer">
+                                                <span class="fa fa-arrow-right text-white" />
+                                            </div>
+                                        </div>
+                                        <ChartRenderer type="'line'" title="'Partner Orders Chart'" />
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
                 </div>
             </div>        
         </t>
 </templates>
-
-   

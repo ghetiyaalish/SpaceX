@@ -13,8 +13,11 @@
             'sales_dashboard/static/src/css/dashboard.scss',
             'sales_dashboard/static/src/js/dashboard.js',
             'sales_dashboard/static/src/js/kpi_card.js',
+            'sales_dashboard/static/src/js/chart_renderer.js',
             'sales_dashboard/static/src/xml/dashboard.xml',
             'sales_dashboard/static/src/xml/kpi_card.xml',
+            'sales_dashboard/static/src/xml/chart_renderer.xml',
+
 
 
         ],
